@@ -7,5 +7,5 @@ void somarSemSinal(int n, int A[], int B[], int C[]) {
         C[i + 1] = soma % 2;
         carry = soma / 2;
     }
-    C[0] = carry; // Armazena o transporte final
+    C[0] = carry; 
 }

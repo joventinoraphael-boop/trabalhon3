@@ -1,0 +1,92 @@
+void imprimirVetor(int vet[], int tam) {
+    for (int i = 0; i < tam; i++) {
+        printf("%d", vet[i]);
+    }
+    printf("\n");
+}
+
+
+void somar(int A[], int B[], int n) {
+    int carry = 0;
+    for (int i = n - 1; i >= 0; i--) {
+        int soma = A[i] + B[i] + carry;
+        A[i] = soma % 2;
+        carry = soma / 2;
+    }
+}
+
+
+void subtrair(int A[], int B[], int n) {
+    int B_neg[n], carry = 1;
+   
+    for (int i = 0; i < n; i++) B_neg[i] = !B[i];
+    for (int i = n - 1; i >= 0; i--) {
+        int soma = B_neg[i] + carry;
+        B_neg[i] = soma % 2;
+        carry = soma / 2;
+    }
+    somar(A, B_neg, n);
+}
+
+
+void deslocarDireita(int AC[], int Q[], int *q_extra, int n) {
+    int ultimo_AC = AC[n - 1];
+    int ultimo_Q = Q[n - 1];
+
+    
+    for (int i = n - 1; i > 0; i--) Q[i] = Q[i - 1];
+    Q[0] = ultimo_AC;
+    *q_extra = ultimo_Q;
+
+  
+    for (int i = n - 1; i > 0; i--) AC[i] = AC[i - 1];
+ 
+}
+
+void multiplicarBooth(int A[], int B[], int n) {
+    int AC[n], Q[n], M[n];
+    int q_extra = 0; 
+    int C[2 * n];    
+
+   
+    for (int i = 0; i < n; i++) {
+        AC[i] = 0;   
+        M[i] = A[i];  
+        Q[i] = B[i];  
+    }
+
+   
+    for (int i = 0; i < n; i++) {
+       
+        if (Q[n - 1] == 0 && q_extra == 1) {
+            somar(AC, M, n);
+        } else if (Q[n - 1] == 1 && q_extra == 0) {
+            subtrair(AC, M, n);
+        }
+        desclocarDireita(AC, Q, &q_extra, n);
+    }
+
+  
+    for (int i = 0; i < n; i++) C[i] = AC[i];
+    for (int i = 0; i < n; i++) C[i + n] = Q[i];
+
+    printf("Resultado (C): ");
+    imprimirVetor(C, 2 * n);
+}
+
+int main() {
+    int n;
+    printf("Digite o numero de bits (n): ");
+    scanf("%d", &n);
+
+    int A[n], B[n];
+    printf("Digite os bits do vetor A (separados por espaco): ");
+    for (int i = 0; i < n; i++) scanf("%d", &A[i]);
+
+    printf("Digite os bits do vetor B (separados por espaco): ");
+    for (int i = 0; i < n; i++) scanf("%d", &B[i]);
+
+    multiplicarBooth(A, B, n);
+
+    return 0;
+}

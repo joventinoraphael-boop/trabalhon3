@@ -1,0 +1,83 @@
+void imprimirHex(int *bits, int totalBits) {
+    char hexChars[] = "0123456789ABCDEF";
+    
+ 
+    for (int i = 0; i < totalBits; i += 4) {
+        int valor = 0;
+        if(bits[i] == 1)   valor += 8;
+        if(bits[i+1] == 1) valor += 4;
+        if(bits[i+2] == 1) valor += 2;
+        if(bits[i+3] == 1) valor += 1;
+        
+        printf("%c", hexChars[valor]);
+    }
+    printf("\n");
+}
+void imprimirBinario(int *bits, int totalBits) {
+    for(int i = 0; i < totalBits; i++) {
+        printf("%d", bits[i]);
+        if ((i + 1) % 4 == 0) printf(" ");
+    }
+    printf("\n");
+}
+
+int somarHexComSinal(int *A, int *B, int *C, int totalBits) {
+    int carry = 0;
+
+    for (int i = totalBits - 1; i >= 0; i--) {
+        int soma = A[i] + B[i] + carry;
+        
+    
+        C[i] = soma % 2;
+        carry = soma / 2;
+    }
+
+    int sinalA = A[0];
+    int sinalB = B[0];
+    int sinalC = C[0];
+    if ((sinalA == sinalB) && (sinalC != sinalA)) {
+        return 0; 
+    }
+
+    return 1; 
+}
+
+int main() {
+  
+    int n = 2;
+    int totalBits = 4 * n;
+    int C[8]; 
+    int A1[] = {0,0,1,0, 0,1,0,1}; 
+    int B1[] = {0,0,0,1, 0,0,1,0}; 
+    
+    printf("--- Teste 1: 25 + 12 (Hex) ---\n");
+    if (somarHexComSinal(A1, B1, C, totalBits)) {
+        printf("Resultado Bin: "); imprimirBinario(C, totalBits);
+        printf("Resultado Hex: "); imprimirHex(C, totalBits);
+    } else {
+        printf("Erro: Overflow detectado!\n");
+    }
+
+    int A2[] = {0,0,0,0, 0,1,0,1}; 
+    int B2[] = {1,1,1,1, 1,1,1,1}; 
+    printf("\n--- Teste 2: 05 + FF (Hex) ---\n");
+    if (somarHexComSinal(A2, B2, C, totalBits)) {
+        printf("Resultado Bin: "); imprimirBinario(C, totalBits);
+        printf("Resultado Hex: "); imprimirHex(C, totalBits);
+    } else {
+        printf("Erro: Overflow detectado!\n");
+    }
+
+ 
+    int A3[] = {0,1,1,1, 0,0,0,0}; 
+    int B3[] = {0,0,0,1, 0,0,0,0}; 
+
+    printf("\n--- Teste 3: 70 + 10 (Hex) [Overflow Esperado] ---\n");
+    if (somarHexComSinal(A3, B3, C, totalBits)) {
+        printf("Resultado Hex: "); imprimirHex(C, totalBits);
+    } else {
+        printf("Erro: A soma nao e possivel (Overflow).\n");
+    }
+
+    return 0;
+}

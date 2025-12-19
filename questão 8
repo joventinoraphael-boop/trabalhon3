@@ -1,0 +1,108 @@
+
+int bitsParaInt(int *vetor, int inicio) {
+    int valor = 0;
+    if(vetor[inicio] == 1)   valor += 8;
+    if(vetor[inicio+1] == 1) valor += 4;
+    if(vetor[inicio+2] == 1) valor += 2;
+    if(vetor[inicio+3] == 1) valor += 1;
+    return valor;
+}
+
+void intParaBits(int valor, int *vetor, int inicio) {
+    vetor[inicio]   = (valor >> 3) & 1;
+    vetor[inicio+1] = (valor >> 2) & 1;
+    vetor[inicio+2] = (valor >> 1) & 1;
+    vetor[inicio+3] = valor & 1;
+}
+
+
+void imprimirVetor(int *v, int tamanho) {
+    for(int i = 0; i < tamanho; i++) {
+        printf("%d", v[i]);
+        if ((i + 1) % 4 == 0) printf(" "); 
+    }
+    printf("\n");
+}
+
+
+int subtrairBCD(int *A, int *B, int *C, int tamanhoTotal) {
+    
+  
+    int aMaiorOuIgual = 1;
+    for(int i = 0; i < tamanhoTotal; i++) {
+        if (A[i] > B[i]) {
+            aMaiorOuIgual = 1;
+            break;
+        }
+        if (B[i] > A[i]) {
+            aMaiorOuIgual = 0;
+            break;l
+        }
+    }
+
+    if (!aMaiorOuIgual) {
+        return 0; 
+    }
+
+    
+    int emprestimo = 0;
+
+  
+    for (int i = tamanhoTotal - 4; i >= 0; i -= 4) {
+        int digitoA = bitsParaInt(A, i);
+        int digitoB = bitsParaInt(B, i);
+
+        int diferenca = digitoA - digitoB - emprestimo;
+
+        if (diferenca < 0) {
+            diferenca += 10;
+            emprestimo = 1;
+        } else {
+            emprestimo = 0;
+        }
+
+        
+        intParaBits(diferenca, C, i);
+    }
+
+    return 1; 
+}
+
+int main() {
+   
+    int A[] = {0,0,1,0,  0,1,0,1}; 
+    
+    
+    int B[] = {0,0,0,1,  0,1,1,0}; 
+    
+    int tamanho = 8; 
+    int C[8]; 
+
+    printf("Vetor A (BCD): ");
+    imprimirVetor(A, tamanho);
+    
+    printf("Vetor B (BCD): ");
+    imprimirVetor(B, tamanho);
+
+    if (subtrairBCD(A, B, C, tamanho)) {
+        printf("Resultado C (A - B): ");
+        imprimirVetor(C, tamanho);
+       
+    } else {
+        printf("Erro: A subtracao nao e possivel (A < B).\n");
+    }
+
+    printf("\nTeste inverso (B - A)...\n");
+    if (subtrairBCD(B, A, C, tamanho)) {
+        imprimirVetor(C, tamanho);
+    } else {
+printf("Erro: A subtracao nao e possivel (Resultado negativo).\n");
+    }
+
+    return 0;
+}
+        printf("Erro: A subtracao nao e possivel (Resultado negativo).\n");
+    }
+
+    return 0;
+}

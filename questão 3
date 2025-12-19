@@ -1,5 +1,6 @@
 int somarComplemento2(int n, int A[], int B[], int C[]) {
-    int carry = 0;
+  int main(){
+int carry = 0;
     for (int i = n - 1; i >= 0; i--) {
         int soma = A[i] + B[i] + carry;
         C[i] = soma % 2;
@@ -7,4 +8,5 @@ int somarComplemento2(int n, int A[], int B[], int C[]) {
     }
     if (A[0] == B[0] && C[0] != A[0]) return -1; // Erro 
     return 0;
+}
 }

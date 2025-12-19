@@ -1,0 +1,105 @@
+void imprimirVetor(int vet[], int tam) {
+    for (int i = 0; i < tam; i++) {
+        printf("%d", vet[i]);
+    }
+    printf("\n");
+}
+int subtrair(int Minuendo[], int Subtraendo[], int n) {
+    int x = 0;
+    for (int i = n - 1; i >= 0; i--) {
+        int sub = Minuendo[i] - Subtraendo[i] - x;
+        if (sub < 0) {
+            sub = sub + 2;
+           x = 1;
+        } else {
+            x = 0;
+        }
+        Minuendo[i] = sub;
+    }
+    return x;
+}
+
+
+void somar(int A[], int B[], int n) {
+    int carry = 0;
+    for (int i = n - 1; i >= 0; i--) {
+        int s = A[i] + B[i] + carry;
+        A[i] = s % 2;
+        carry = s / 2;
+    }
+}
+
+
+void deslocarEsquerda(int R[], int Q[], int n) {
+    int msb_Q = Q[0]; 
+
+   
+    for (int i = 0; i < n - 1; i++) {
+        R[i] = R[i + 1];
+    }
+    R[n - 1] = msb_Q; 
+
+   
+    for (int i = 0; i < n - 1; i++) {
+        Q[i] = Q[i + 1];
+    }
+    Q[n - 1] = 0;
+}
+
+void divisaoRestoring(int A[], int B[], int n) {
+    int R[n]; 
+    int Q[n];
+    for(int i = 0; i < n; i++) {
+        R[i] = 0;   
+        Q[i] = A[i];
+    }
+
+    printf("--- Inicio da Divisao ---\n");
+
+    
+    for (int i = 0; i < n; i++) {
+       
+        deslocarEsquerda(R, Q, n);
+
+       
+        int x = subtrair(R, B, n);
+        if (x == 1) { 
+            somar(R, B, n);
+           
+            Q[n - 1] = 0; 
+        } else { 
+           
+            Q[n - 1] = 1;
+        }
+    }
+
+  
+    
+    printf("\n--- Resultado Final ---\n");
+    printf("Quociente (C): ");
+    imprimirVetor(Q, n);
+    printf("Resto (R):     ");
+    imprimirVetor(R, n);
+}
+
+int main() {
+    int n;
+    printf("Digite o numero de bits (n): ");
+    scanf("%d", &n);
+
+  
+    int *A = (int*)malloc(n * sizeof(int)); 
+    int *B = (int*)malloc(n * sizeof(int)); 
+
+    printf("Digite os bits do Dividendo A (separados por espaco): ");
+    for (int i = 0; i < n; i++) scanf("%d", &A[i]);
+
+    printf("Digite os bits do Divisor B (separados por espaco): ");
+    for (int i = 0; i < n; i++) scanf("%d", &B[i]);
+
+    divisaoRestoring(A, B, n);
+
+    free(A);
+    free(B);
+    return 0;
+}

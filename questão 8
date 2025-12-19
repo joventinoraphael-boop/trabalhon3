@@ -1,108 +1,66 @@
 
-int bitsParaInt(int *vetor, int inicio) {
-    int valor = 0;
-    if(vetor[inicio] == 1)   valor += 8;
-    if(vetor[inicio+1] == 1) valor += 4;
-    if(vetor[inicio+2] == 1) valor += 2;
-    if(vetor[inicio+3] == 1) valor += 1;
-    return valor;
+
+#define MAX 100  
+
+int bcd_para_int(int bcd[4]) {
+    return bcd[0]*8 + bcd[1]*4 + bcd[2]*2 + bcd[3];
 }
 
-void intParaBits(int valor, int *vetor, int inicio) {
-    vetor[inicio]   = (valor >> 3) & 1;
-    vetor[inicio+1] = (valor >> 2) & 1;
-    vetor[inicio+2] = (valor >> 1) & 1;
-    vetor[inicio+3] = valor & 1;
-}
-
-
-void imprimirVetor(int *v, int tamanho) {
-    for(int i = 0; i < tamanho; i++) {
-        printf("%d", v[i]);
-        if ((i + 1) % 4 == 0) printf(" "); 
-    }
-    printf("\n");
-}
-
-
-int subtrairBCD(int *A, int *B, int *C, int tamanhoTotal) {
-    
-  
-    int aMaiorOuIgual = 1;
-    for(int i = 0; i < tamanhoTotal; i++) {
-        if (A[i] > B[i]) {
-            aMaiorOuIgual = 1;
-            break;
-        }
-        if (B[i] > A[i]) {
-            aMaiorOuIgual = 0;
-            break;l
-        }
-    }
-
-    if (!aMaiorOuIgual) {
-        return 0; 
-    }
-
-    
-    int emprestimo = 0;
-
-  
-    for (int i = tamanhoTotal - 4; i >= 0; i -= 4) {
-        int digitoA = bitsParaInt(A, i);
-        int digitoB = bitsParaInt(B, i);
-
-        int diferenca = digitoA - digitoB - emprestimo;
-
-        if (diferenca < 0) {
-            diferenca += 10;
-            emprestimo = 1;
-        } else {
-            emprestimo = 0;
-        }
-
-        
-        intParaBits(diferenca, C, i);
-    }
-
-    return 1; 
+void int_para_bcd(int valor, int bcd[4]) {
+    bcd[0] = (valor >> 3) & 1;
+    bcd[1] = (valor >> 2) & 1;
+    bcd[2] = (valor >> 1) & 1;
+    bcd[3] = valor & 1;
 }
 
 int main() {
-   
-    int A[] = {0,0,1,0,  0,1,0,1}; 
-    
-    
-    int B[] = {0,0,0,1,  0,1,1,0}; 
-    
-    int tamanho = 8; 
-    int C[8]; 
+    int n;
+    int A[MAX][4], B[MAX][4], C[MAX][4];
 
-    printf("Vetor A (BCD): ");
-    imprimirVetor(A, tamanho);
-    
-    printf("Vetor B (BCD): ");
-    imprimirVetor(B, tamanho);
+    printf("Digite o numero de digitos BCD (n): ");
+    scanf("%d", &n);
 
-    if (subtrairBCD(A, B, C, tamanho)) {
-        printf("Resultado C (A - B): ");
-        imprimirVetor(C, tamanho);
-       
-    } else {
-        printf("Erro: A subtracao nao e possivel (A < B).\n");
+    printf("Digite A (BCD, 4 bits por digito):\n");
+    for (int i = 0; i < n; i++)
+        scanf("%d %d %d %d", &A[i][0], &A[i][1], &A[i][2], &A[i][3]);
+
+    printf("Digite B (BCD, 4 bits por digito):\n");
+    for (int i = 0; i < n; i++)
+        scanf("%d %d %d %d", &B[i][0], &B[i][1], &B[i][2], &B[i][3]);
+
+    int borrow = 0;
+    for (int i = n - 1; i >= 0; i--) {
+        int a = bcd_para_int(A[i]);
+        int b = bcd_para_int(B[i]) + borrow;
+
+        if (a < b) {
+            a += 10;
+            borrow = 1;
+        } else {
+            borrow = 0;
+        }
+
+        int resultado = a - b;
+        int_para_bcd(resultado, C[i]);
+    }
+    if (borrow) {
+        printf("Erro: A < B. Subtracao nao possivel.\n");
+        return 1;
     }
 
-    printf("\nTeste inverso (B - A)...\n");
-    if (subtrairBCD(B, A, C, tamanho)) {
-        imprimirVetor(C, tamanho);
-    } else {
-printf("Erro: A subtracao nao e possivel (Resultado negativo).\n");
-    }
 
-    return 0;
-}
-        printf("Erro: A subtracao nao e possivel (Resultado negativo).\n");
+    printf("Resultado (C em BCD):\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d%d%d%d ",
+               C[i][0], C[i][1], C[i][2], C[i][3]);
     }
+    printf("\n");
+
+    printf("Resultado decimal: ");
+    for (int i = 0; i < n; i++) {
+        printf("%d", bcd_para_int(C[i]));
+    }
+    printf("\n");
 
     return 0;
 }
